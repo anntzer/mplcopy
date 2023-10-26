@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mplcopy"
+description = "Copying Matplotlib figures"
+authors = [{name = "Antony Lee"}]
+license = {text = "zlib"}
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: zlib/libpng License",
+    "Programming Language :: Python :: 3",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "matplotlib",
+    "pywin32; sys_platform == 'win32'"
+]
+dynamic = ["readme", "version"]
+
+[tool.setuptools_scm]
+version_scheme = "post-release"
+local_scheme = "node-and-date"
+fallback_version = "0+unknown"
+
+[tool.coverage.run]
+branch = true
+source_pkgs = ["mplcopy"]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "error",
+    "ignore::DeprecationWarning",
+    "error::DeprecationWarning:mplcopy",
+]
