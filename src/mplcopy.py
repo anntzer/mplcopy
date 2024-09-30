@@ -43,6 +43,7 @@ import subprocess
 import sys
 from tempfile import TemporaryDirectory
 
+import matplotlib as mpl
 import PIL
 
 
@@ -52,6 +53,8 @@ def setup(figure):
     """
 
     @functools.partial(figure.canvas.mpl_connect, "key_press_event")
+    # Copy the figure as it appears on the screen, not as it would be saved.
+    @mpl.rc_context({"savefig.transparent": False})
     def on_key_press(event):
         if sys.platform == "darwin":
             if event.key != "cmd+c":
