@@ -11,6 +11,9 @@ will be automatically installed on any Figure the first time it is drawn.
 Otherwise, explicitly call ``mplcopy.setup(figure)`` for each figure as
 desired.
 
+The resolution at which the image is copied is set by the ``MPLCOPY_DPI``
+environment variable (defaulting to ``rcParams["savefig.dpi"]``).
+
 .. _xclip: https://github.com/astrand/xclip
 
 -------------------------------------------------------------------------------
@@ -37,6 +40,7 @@ freely, subject to the following restrictions:
 
 import functools
 from io import BytesIO
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -56,11 +60,12 @@ def setup(figure):
     # Copy the figure as it appears on the screen, not as it would be saved.
     @mpl.rc_context({"savefig.transparent": False})
     def on_key_press(event):
+        dpi = float(os.environ.get("MPLCOPY_DPI") or 0) or None
         if sys.platform == "darwin":
             if event.key != "cmd+c":
                 return
             with TemporaryDirectory() as tmpdir:
-                figure.savefig(Path(tmpdir, "fig.tiff"))
+                figure.savefig(Path(tmpdir, "fig.png"), dpi=dpi)
                 subprocess.run([
                     "osascript", "-e",
                     'set the clipboard to (read "fig.tiff" as TIFF picture)',
@@ -71,7 +76,7 @@ def setup(figure):
             if not shutil.which("xclip"):
                 raise RuntimeError("On Linux, mplcopy depends on xclip")
             buf_png = BytesIO()
-            figure.savefig(buf_png, format="png")
+            figure.savefig(buf_png, format="png", dpi=dpi)
             subprocess.run([
                 "xclip", "-sel", "clipboard", "-t", "image/png"
             ], input=buf_png.getvalue(), check=True)
@@ -80,7 +85,7 @@ def setup(figure):
                 return
             buf_png = BytesIO()
             buf_bmp = BytesIO()
-            figure.savefig(buf_png, format="png")
+            figure.savefig(buf_png, format="png", dpi=dpi)
             PIL.Image.open(buf_png).save(buf_bmp, format="bmp")
             import win32clipboard as wc
             wc.OpenClipboard()
