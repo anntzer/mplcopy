@@ -68,7 +68,7 @@ def setup(figure):
                 figure.savefig(Path(tmpdir, "fig.png"), dpi=dpi)
                 subprocess.run([
                     "osascript", "-e",
-                    'set the clipboard to (read "fig.tiff" as TIFF picture)',
+                    'set the clipboard to (read "fig.png" as «class PNGf»)',
                 ], cwd=tmpdir, check=True)
         elif sys.platform == "linux":
             if event.key != "ctrl+c":
